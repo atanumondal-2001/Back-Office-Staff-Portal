@@ -45,4 +45,9 @@ A secure, separate dashboard accessible only to users with the "admin" role, pro
     * `jsPDF` & `jsPDF-autotable` for all PDF generation.
     * `Chart.js` for the admin dashboard's financial chart.
 
+![This is a screenshot of the login page](https://i.ibb.co/ds31JPmc/Login-Page.png)
+![This is a screenshot of the admin dashboard page](https://i.ibb.co/rKVHyBCV/Admin-Dashboard.png)
+![This is a screenshot of the main dashboard page](https://i.ibb.co/MydjpVbF/Main-Dashboad.png)
+
+
 ---
