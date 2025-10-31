@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MAMTS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Clean table styles */
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th,
+        .admin-table td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .admin-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        
+        .admin-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .admin-table tr:hover {
+            background-color: #f3f4f6;
+        }
+        /* Tab Styles */
+        
+        .tab-btn {
+            padding: 10px 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+        }
+        
+        .tab-btn.active {
+            color: #4f46e5;
+            border-color: #4f46e5;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between h-auto md:h-20 py-4 md:py-0">
+                <div class="flex items-center space-x-3">
+                    <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                    <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-indigo-600">Back to Portal</a>
+                    <button id="logout-btn" class="text-sm font-medium text-red-600 hover:text-red-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+
+        <div id="stats-loader" class="text-center text-gray-500 py-10">
+            <p>Loading Admin Statistics...</p>
+        </div>
+
+        <div id="admin-content" class="hidden space-y-8">
+
+            <section>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div id="drilldown-today" data-target-tab="today" class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5 cursor-pointer hover:shadow-xl transition-shadow">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-blue-100">
+                            <svg class="w-7 h-7 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Admissions Today</p>
+                            <p id="stat-today-admissions" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-green-100">
+                            <svg class="w-7 h-7 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c1.657 0 3-.895 3-2s-1.343-2-3-2-3-.895-3-2 1.343-2 3-2m-3 4h6m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 12V7m0 5v4m0 0v.5"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Revenue Today</p>
+                            <p id="stat-today-revenue" class="text-3xl font-bold text-gray-900 mt-1">₹0</p>
+                        </div>
+                    </div>
+
+                    <div id="drilldown-operations" data-target-tab="operations" class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5 cursor-pointer hover:shadow-xl transition-shadow">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-red-100">
+                            <svg class="w-7 h-7 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Pending Payments</p>
+                            <p id="stat-pending-count" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div id="drilldown-students" data-target-tab="students" class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5 cursor-pointer hover:shadow-xl transition-shadow">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-orange-100">
+                            <svg class="w-7 h-7 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341A6.002 6.002 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Student Follow-ups</s-p>
+                                <p id="stat-followup-count" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-purple-100">
+                            <svg class="w-7 h-7 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">New Students (Month)</p>
+                            <p id="stat-month-students" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-yellow-100">
+                            <svg class="w-7 h-7 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0H9m10 0a2 2 0 100-4 2 2 0 000 4z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Out-Candidates (Month)</p>
+                            <p id="stat-month-out" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-indigo-100">
+                            <svg class="w-7 h-7 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Revenue (This Month)</p>
+                            <p id="stat-month-revenue" class="text-3xl font-bold text-gray-900 mt-1">₹0</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+            <section>
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex -mb-px px-6" aria-label="Tabs">
+                            <button class="tab-btn active" data-tab="financials">Financials</button>
+                            <button class="tab-btn" data-tab="operations">Operations</button>
+                            <button class="tab-btn" data-tab="students">Student Follow-ups</button>
+                            <button class="tab-btn" data-tab="today">Admissions Today</button>
+                            <button class="tab-btn" data-tab="payments">Payment Report</button>
+                        </nav>
+                    </div>
+
+                    <div class="p-6">
+                        <div id="financials-tab" class="tab-content active">
+                            <h3 class="text-lg font-medium text-gray-700 mb-4">Monthly Revenue Comparison</h3>
+                            <div class="relative w-full overflow-hidden" style="max-height: 400px;">
+                                <canvas id="revenue-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div id="operations-tab" class="tab-content">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Students with Pending Payments</h3>
+                            <div class="overflow-x-auto">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>A/C No</th>
+                                            <th>Mobile</th>
+                                            <th>Remaining Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pending-payments-table">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="students-tab" class="tab-content">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Students Requiring LL Test Follow-up</h3>
+                            <div class="overflow-x-auto">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>A/C No</th>
+                                            <th>Mobile</th>
+                                            <th>Last Test Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="failed-ll-table">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="today-tab" class="tab-content">
+                            <h3 class="text-lg font-medium text-gray-900 mb-6">Admissions for Today</h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-700 mb-4">New Students</h4>
+                                    <div class="overflow-x-auto border rounded-lg">
+                                        <table class="admin-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>A/C No</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="today-students-table">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-700 mb-4">New Out-Candidates</h4>
+                                    <div class="overflow-x-auto border rounded-lg">
+                                        <table class="admin-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>A/C No</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="today-out-table">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="payments-tab" class="tab-content">
+                            <h3 class="text-lg font-medium text-gray-900 mb-6">Detailed Payment Report</h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                <div>
+                                    <label for="report-from-date" class="block text-sm font-medium text-gray-700">From Date</label>
+                                    <input type="date" id="report-from-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label for="report-to-date" class="block text-sm font-medium text-gray-700">To Date</label>
+                                    <input type="date" id="report-to-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <button type="button" id="generate-report-btn" class="w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Generate Report
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="report-summary" class="mt-6 bg-gray-100 p-4 rounded-md hidden">
+                                <p class="text-lg font-semibold text-gray-800">Total Received: <span id="report-total-amount" class="text-green-600">₹0.00</span></p>
+                                <p class="text-sm text-gray-600">For the period: <span id="report-date-range"></span></p>
+                            </div>
+
+                            <div id="report-table-container" class="mt-6 overflow-x-auto">
+                                <table id="payment-report-table" class="min-w-full divide-y divide-gray-200 border admin-table">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">A/C No</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount (₹)</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mode</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Received By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="payment-report-tbody" class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4 text-gray-500">Select dates and generate report to view payments.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script type="module" src="admin.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mondal Automobile - Staff Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- jsPDF for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        
+        #lookup-status {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        /* Style for the report table */
+        
+        #payment-report-table th,
+        #payment-report-table td {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        
+        #payment-report-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+        
+        #payment-report-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gray-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Left Side: Logo & School Name -->
+                <div class="flex items-center space-x-4">
+                    <!-- SVG Logo: Steering Wheel -->
+                    <div class="flex-shrink-0">
+                        <svg class="h-10 w-10 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.91 15.91a9.003 9.003 0 01-1.411-1.411M12 21a9.003 9.003 0 01-9-9m18 0a9.003 9.003 0 00-9-9m-9 9a9.003 9.003 0 009 9m-9-9h18"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 12a3 3 0 100-6 3 3 0 000 6z"
+                />
+              </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">
+                            Mondal Automobile Motor Training School
+                        </h1>
+                        <p class="text-sm text-indigo-300 italic">
+                            "Safe Drive, Save Life."
+                        </p>
+                    </div>
+                </div>
+                <!-- Right Side: Portal Title -->
+                <div class="flex items-center space-x-2">
+                    <svg class="hidden md:block w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+                    <span class="hidden md:block font-semibold text-lg">Internal Staff Portal</span>
+
+                    <a href="admin.html" id="admin-dashboard-btn" class="hidden ml-3 md:ml-6 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Admin Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+        <!-- Record Lookup Section -->
+        <div id="student-lookup" class="bg-white p-6 rounded-lg shadow-md mb-10">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Find & Edit Existing Record
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label for="record-type" class="block text-sm font-medium text-gray-700">Record Type</label>
+                    <select id="record-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                      <option value="students">Student</option>
+                      <option value="out-candidates">Out Candidate</option>
+                      <option value="form5_records">Form 5</option> <!-- Added Form 5 Option -->
+                    </select>
+                </div>
+                <div>
+                    <label for="search-criteria" class="block text-sm font-medium text-gray-700">Search By</label>
+                    <select id="search-criteria" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+              <option value="id">A/C No / Serial No</option> <!-- Changed label and value -->
+              <option value="name">Applicant / Student Name</option>
+              <option value="mobile">Mobile Number</option>
+              <option value="guardianName">Guardian Name</option> <!-- Added Guardian Name -->
+              <option value="dob">Date of Birth (Student/Candidate only)</option> <!-- Clarified applicability -->
+              <!-- Removed Driving License Number -->
+            </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="search-value" class="block text-sm font-medium text-gray-700">Search Value</label>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <input type="text" id="search-value" placeholder="Enter search term..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                        <button type="button" id="lookup-btn" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap">
+                Find Record
+              </button>
+                    </div>
+                </div>
+            </div>
+            <p id="lookup-status" class="text-sm text-gray-500 mt-2 h-5"></p>
+        </div>
+
+        <!-- Dashboard with Cards -->
+        <div id="dashboard">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 px-4 sm:px-0">
+                Select an Action
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Admission Card -->
+                <div data-target="form-admission" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col items-center text-center">
+                    <div class="bg-indigo-100 p-3 rounded-full mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                />
+              </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Student</h3>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Open a blank admission form to register a new student.
+                    </p>
+                </div>
+
+                <!-- Out Candidate Card -->
+                <div data-target="form-out-candidate" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col items-center text-center">
+                    <div class="bg-indigo-100 p-3 rounded-full mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                />
+              </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        Out Candidate Form
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Open a blank form to register a new out candidate.
+                    </p>
+                </div>
+
+                <!-- Form 5 Card -->
+                <div data-target="form-misc" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col items-center text-center">
+                    <div class="bg-indigo-100 p-3 rounded-full mb-4">
+                        <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        Form 5 Generation
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Generate Form 5 Driving Certificate.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="mt-12">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 px-4 sm:px-0">
+                    Today's At-a-Glance
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-5">
+                        <div class="flex-shrink-0 p-3 rounded-full bg-green-100">
+                            <svg class="w-7 h-7 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0c1.657 0 3-.895 3-2s-1.343-2-3-2-3-.895-3-2 1.343-2 3-2m-3 4h6m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 12V7m0 5v4m0 0v.5"></path></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Revenue Today</p>
+                            <p id="staff-today-revenue" class="text-3xl font-bold text-gray-900 mt-1">
+                                Loading...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reporting Section -->
+            <div class="mt-12">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 px-4 sm:px-0">
+                    Reporting & Exports
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Export Students Card -->
+                    <div id="export-students-card" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col items-center text-center">
+                        <div class="bg-green-100 p-3 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 13.5l3 3m0 0l3-3m-3 3v-6m1.06-4.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+                  />
+                </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            Export Student Data
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-600">
+                            Download the student database as a CSV file.
+                        </p>
+                    </div>
+                    <!-- Export Out-Candidates Card -->
+                    <div id="export-out-candidates-card" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col items-center text-center">
+                        <div class="bg-blue-100 p-3 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 13.5l3 3m0 0l3-3m-3 3v-6m1.06-4.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+                  />
+                </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            Export Out Candidate Data
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-600">
+                            Download the out candidate database as a CSV file.
+                        </p>
+                    </div>
+                    <!-- Export Form 5 Data Card -->
+                    <div id="export-form5-card" class="card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col items-center text-center">
+                        <div class="bg-purple-100 p-3 rounded-full mb-4">
+                            <!-- New Color -->
+                            <svg class="w-8 h-8 text-purple-600" <!-- New Color -->
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 13.5l3 3m0 0l3-3m-3 3v-6m1.06-4.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+                  />
+                </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            Export Form 5 Data
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-600">
+                            Download all generated Form 5 records as a CSV file.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Sections Wrapper -->
+        <div id="forms-wrapper" class="hidden">
+
+            <!-- Admission Form -->
+            <div id="form-admission" class="form-container hidden">
+                <form id="admission-form" class="bg-white p-8 rounded-lg shadow-md space-y-8">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">
+                                Student Admission
+                            </h2>
+                            <p class="text-sm text-gray-500">
+                                Fill out the form for a new student or edit an existing one.
+                            </p>
+                        </div>
+                        <button type="button" class="back-btn inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                <svg
+                  class="w-5 h-5 mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Back to Dashboard
+              </button>
+                    </div>
+
+                    <!-- Student Information Section -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            Student Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="ac-no" class="block text-sm font-medium text-gray-700">A/C No. (Auto-Generated on Save)</label
+                  >
+                  <input
+                    type="text"
+                    id="ac-no"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-200 cursor-not-allowed"
+                    readonly
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label
+                    for="student-name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Name</label
+                  >
+                  <input
+                    type="text"
+                    id="student-name"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="guardian-name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Son/Wife Of</label
+                  >
+                  <input
+                    type="text"
+                    id="guardian-name"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="village"
+                    class="block text-sm font-medium text-gray-700"
+                    >Village</label
+                  >
+                  <input
+                    type="text"
+                    id="village"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="post-office"
+                    class="block text-sm font-medium text-gray-700"
+                    >Post Office</label
+                  >
+                  <input
+                    type="text"
+                    id="post-office"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="police-station"
+                    class="block text-sm font-medium text-gray-700"
+                    >Police Station</label
+                  >
+                  <input
+                    type="text"
+                    id="police-station"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="district"
+                    class="block text-sm font-medium text-gray-700"
+                    >District</label
+                  >
+                  <select
+                    id="district"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select District</option>
+                    <option>Alipurduar</option>
+                    <option>Bankura</option>
+                    <option>Birbhum</option>
+                    <option>Cooch Behar</option>
+                    <option>Dakshin Dinajpur</option>
+                    <option>Darjeeling</option>
+                    <option>Hooghly</option>
+                    <option>Howrah</option>
+                    <option>Jalpaiguri</option>
+                    <option>Jhargram</option>
+                    <option>Kalimpong</option>
+                    <option>Kolkata</option>
+                    <option>Malda</option>
+                    <option>Murshidabad</option>
+                    <option>Nadia</option>
+                    <option>North 24 Parganas</option>
+                    <option>Paschim Bardhaman</option>
+                    <option>Paschim Medinipur</option>
+                    <option>Purba Bardhaman</option>
+                    <option>Purba Medinipur</option>
+                    <option>Purulia</option>
+                    <option>South 24 Parganas</option>
+                    <option>Uttar Dinajpur</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="sub-district"
+                    class="block text-sm font-medium text-gray-700"
+                    >Sub-District</label
+                  >
+                  <select
+                    id="sub-district"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select District First</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="pin-code"
+                    class="block text-sm font-medium text-gray-700"
+                    >Pin Code</label
+                  >
+                  <input
+                    type="text"
+                    id="pin-code"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div class="md:col-span-3">
+                  <label
+                    for="mobile-number"
+                    class="block text-sm font-medium text-gray-700"
+                    >Mobile Number</label
+                  >
+                  <input
+                    type="tel"
+                    id="mobile-number"
+                    maxlength="10"
+                    pattern="[0-9]{10}"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Particulars Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Particulars
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="admission-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Admission Date</label
+                  >
+                  <input
+                    type="date"
+                    id="admission-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label for="ll-app-no" class="block text-sm font-medium text-gray-700">LL Application No.</label>
+                                <input type="text" id="ll-app-no" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+                            <div>
+                                <label for="dl-app-no" class="block text-sm font-medium text-gray-700">DL Application No.</label>
+                                <input type="text" id="dl-app-no" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+                            <div>
+                                <label for="class-type" class="block text-sm font-medium text-gray-700">Class</label
+                  >
+                  <select
+                    id="class-type"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option>LMV</option>
+                    <option>LMV + MCWG</option>
+                    <option>LMV + MCWOG</option>
+                    <option>LMV Endorsement</option>
+                    <option>LMV + MCWG Endorsement</option>
+                    <option>LMV + MCWOG Endorsement</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="dob"
+                    class="block text-sm font-medium text-gray-700"
+                    >Date of Birth</label
+                  >
+                  <input
+                    type="date"
+                    id="dob"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="voter-id"
+                    class="block text-sm font-medium text-gray-700"
+                    >Voter ID Number</label
+                  >
+                  <input
+                    type="text"
+                    id="voter-id"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="aadhar-no"
+                    class="block text-sm font-medium text-gray-700"
+                    >Aadhar Number</label
+                  >
+                  <input
+                    type="text"
+                    id="aadhar-no"
+                    maxlength="14"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="blood-group"
+                    class="block text-sm font-medium text-gray-700"
+                    >Blood Group</label
+                  >
+                  <input
+                    type="text"
+                    id="blood-group"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div class="md:col-span-3">
+                  <label class="block text-sm font-medium text-gray-700"
+                    >Student Photo</label
+                  >
+                  <div class="mt-1 flex items-center space-x-6">
+                    <img
+                      id="photo-preview"
+                      src="https://placehold.co/100x100/e2e8f0/718096?text=Photo"
+                      alt="Student Photo"
+                      class="h-24 w-24 rounded-md object-cover"
+                    />
+                    <div class="flex-grow">
+                      <input
+                        type="file"
+                        id="photo-upload"
+                        accept="image/*"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+                      />
+                      <p class="text-xs text-gray-500 mt-1">
+                        Upload a passport-size photo (JPG, PNG).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents Received Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Documents Received
+              </h3>
+              <div
+                id="documents-grid"
+                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              >
+                <div class="flex items-center">
+                  <input
+                    id="doc-aadhar"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-aadhar"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Aadhar Card</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-voter"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-voter"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Voter ID Card</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-pan"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="doc-pan" class="ml-2 block text-sm text-gray-900"
+                    >PAN Card</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-birth-cert"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-birth-cert"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Birth Certificate</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-passport"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-passport"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Passport</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-address-proof"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-address-proof"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Address Proof</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-medical-cert"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-medical-cert"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Medical Certificate</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-photos"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="doc-photos"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Photographs</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-sslc"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="doc-sslc" class="ml-2 block text-sm text-gray-900"
+                    >SSLC Certificate</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-dl"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="doc-dl" class="ml-2 block text-sm text-gray-900"
+                    >Driving License</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="doc-ll"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="doc-ll" class="ml-2 block text-sm text-gray-900"
+                    >Learner License</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Contract Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Contract & Payment Ledger
+              </h3>
+              <!-- Main Contract Details -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label
+                    for="total-contract"
+                    class="block text-sm font-medium text-gray-700"
+                    >Total Contract Amount (INR)</label
+                  >
+                  <input
+                    type="number"
+                    id="total-contract"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="course-duration"
+                    class="block text-sm font-medium text-gray-700"
+                    >Course Duration (Days)</label
+                  >
+                  <input
+                    type="number"
+                    id="course-duration"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="checked-by"
+                    class="block text-sm font-medium text-gray-700"
+                    >Checked By</label
+                  >
+                  <input
+                    type="text"
+                    id="checked-by"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              <!-- Payment Summary -->
+              <div
+                class="bg-gray-50 p-4 rounded-lg border grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"
+              >
+                <div>
+                  <p class="text-sm font-medium text-gray-500">Total Paid</p>
+                  <p
+                    id="total-paid-display"
+                    class="text-2xl font-bold text-green-600"
+                  >
+                    ₹0
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-500">
+                    Remaining Balance
+                  </p>
+                  <p
+                    id="remaining-balance-display"
+                    class="text-2xl font-bold text-red-600"
+                  >
+                    ₹0
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-500">Status</p>
+                  <span
+                    id="payment-status-badge"
+                    class="px-3 py-1 text-sm font-semibold rounded-full"
+                  ></span>
+                </div>
+              </div>
+              <!-- Add New Payment -->
+              <div class="mt-6 border-t pt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">
+                  Add New Payment
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                  <div>
+                    <label
+                      for="new-payment-amount"
+                      class="block text-sm font-medium text-gray-700"
+                      >Amount (INR)</label
+                    >
+                    <input
+                      type="number"
+                      id="new-payment-amount"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="new-payment-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Payment Date</label
+                    >
+                    <input
+                      type="date"
+                      id="new-payment-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="payment-mode"
+                      class="block text-sm font-medium text-gray-700"
+                      >Payment Mode</label
+                    >
+                    <select
+                      id="payment-mode"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>By Cash</option>
+                      <option>Online Payment</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="new-payment-received-by"
+                      class="block text-sm font-medium text-gray-700"
+                      >Received By</label
+                    >
+                    <input
+                      type="text"
+                      id="new-payment-received-by"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div class="md:col-span-4 flex space-x-3">
+                    <button
+                      type="button"
+                      id="add-payment-btn"
+                      class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Add Payment
+                    </button>
+                    <button
+                      type="button"
+                      id="print-receipt-btn"
+                      class="w-full md:w-auto px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Print Last Receipt
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Payment History -->
+              <div class="mt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">
+                  Payment History
+                </h4>
+                <div
+                  id="payment-history-log"
+                  class="space-y-2 max-h-40 overflow-y-auto bg-white border rounded-md p-3"
+                >
+                  <p class="text-gray-500 text-sm">No payments recorded yet.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Learner License Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Learner License History
+              </h3>
+              <!-- History Log -->
+              <div
+                id="ll-history-log"
+                class="space-y-3 mb-4 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-md border"
+              >
+                <p class="text-gray-500 text-sm">
+                  No learner license records yet.
+                </p>
+              </div>
+              <!-- Add New LL Record -->
+              <div class="mt-6 border-t pt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">
+                  Add New Learner License Record
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label
+                      for="new-ll-number"
+                      class="block text-sm font-medium text-gray-700"
+                      >Learner License No.</label
+                    >
+                    <input
+                      type="text"
+                      id="new-ll-number"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="new-ll-issue-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Issue Date</label
+                    >
+                    <input
+                      type="date"
+                      id="new-ll-issue-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="new-ll-valid-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Valid Upto</label
+                    >
+                    <input
+                      type="date"
+                      id="new-ll-valid-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="new-ll-test-result"
+                      class="block text-sm font-medium text-gray-700"
+                      >Test Result</label
+                    >
+                    <select
+                      id="new-ll-test-result"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>Not Applicable</option>
+                      <option>Pass</option>
+                      <option>Fail</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="new-ll-retest-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Retest Date</label
+                    >
+                    <input
+                      type="date"
+                      id="new-ll-retest-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="new-ll-retest-result"
+                      class="block text-sm font-medium text-gray-700"
+                      >Retest Result</label
+                    >
+                    <select
+                      id="new-ll-retest-result"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>Not Applicable</option>
+                      <option>Pass</option>
+                      <option>Fail</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2">
+                    <label
+                      for="ll-renewal-fee"
+                      class="block text-sm font-medium text-gray-700"
+                      >Renewal Fee (INR, if applicable)</label
+                    >
+                    <input
+                      type="number"
+                      id="ll-renewal-fee"
+                      placeholder="e.g., 500"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="ll-renewal-received-by"
+                      class="block text-sm font-medium text-gray-700"
+                      >Received By</label
+                    >
+                    <input
+                      type="text"
+                      id="ll-renewal-received-by"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="add-ll-btn"
+                  class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add Record
+                </button>
+              </div>
+            </div>
+
+            <!-- New Driving License Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                New Driving License Details
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="new-dl-number"
+                    class="block text-sm font-medium text-gray-700"
+                    >DL Number</label
+                  >
+                  <input
+                    type="text"
+                    id="new-dl-number"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="new-dl-issue-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Issue Date</label
+                  >
+                  <input
+                    type="date"
+                    id="new-dl-issue-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="new-dl-valid-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Valid Upto</label
+                  >
+                  <input
+                    type="date"
+                    id="new-dl-valid-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Previous DL Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Previous Driving License (If any)
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="prev-dl-number"
+                    class="block text-sm font-medium text-gray-700"
+                    >DL Number</label
+                  >
+                  <input
+                    type="text"
+                    id="prev-dl-number"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="prev-dl-issue-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Issue Date</label
+                  >
+                  <input
+                    type="date"
+                    id="prev-dl-issue-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="prev-dl-valid-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Valid Upto</label
+                  >
+                  <input
+                    type="date"
+                    id="prev-dl-valid-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Remarks Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Remarks Log
+              </h3>
+              <div
+                id="remarks-history"
+                class="space-y-3 mb-4 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-md border"
+              >
+                <p class="text-gray-500 text-sm">No remarks yet.</p>
+              </div>
+              <div>
+                <label
+                  for="new-remark"
+                  class="block text-sm font-medium text-gray-700"
+                  >Add New Remark</label
+                >
+                <textarea
+                  id="new-remark"
+                  rows="3"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                ></textarea>
+                <button
+                  type="button"
+                  id="add-remark-btn"
+                  class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add Remark
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t mt-8 space-x-4">
+              <button
+                type="button"
+                id="print-pdf-btn"
+                class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Print Record (PDF)
+              </button>
+              <button
+                type="submit"
+                class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Save Student Data
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Out Candidate Form -->
+        <div id="form-out-candidate" class="form-container hidden">
+           <form
+            id="out-candidate-form"
+            class="bg-white p-8 rounded-lg shadow-md space-y-8"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-2xl font-semibold text-gray-800">
+                  Out Candidate Registration
+                </h2>
+                <p class="text-sm text-gray-500">
+                  Fill out the form for a new out candidate or edit an existing one.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="back-btn inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800"
+              >
+                <svg
+                  class="w-5 h-5 mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Back to Dashboard
+              </button>
+            </div>
+
+            <!-- Candidate Information Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Candidate Information
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="out-ac-no"
+                    class="block text-sm font-medium text-gray-700"
+                    >A/C No. (Auto-Generated on Save)</label
+                  >
+                  <input
+                    type="text"
+                    id="out-ac-no"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-200 cursor-not-allowed"
+                    readonly
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-candidate-name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Name</label
+                  >
+                  <input
+                    type="text"
+                    id="out-candidate-name"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-guardian-name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Son/Wife Of</label
+                  >
+                  <input
+                    type="text"
+                    id="out-guardian-name"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-village"
+                    class="block text-sm font-medium text-gray-700"
+                    >Village</label
+                  >
+                  <input
+                    type="text"
+                    id="out-village"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-post-office"
+                    class="block text-sm font-medium text-gray-700"
+                    >Post Office</label
+                  >
+                  <input
+                    type="text"
+                    id="out-post-office"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-police-station"
+                    class="block text-sm font-medium text-gray-700"
+                    >Police Station</label
+                  >
+                  <input
+                    type="text"
+                    id="out-police-station"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-district"
+                    class="block text-sm font-medium text-gray-700"
+                    >District</label
+                  >
+                  <select
+                    id="out-district"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select District</option>
+                    <option>Alipurduar</option>
+                    <option>Bankura</option>
+                    <option>Birbhum</option>
+                    <option>Cooch Behar</option>
+                    <option>Dakshin Dinajpur</option>
+                    <option>Darjeeling</option>
+                    <option>Hooghly</option>
+                    <option>Howrah</option>
+                    <option>Jalpaiguri</option>
+                    <option>Jhargram</option>
+                    <option>Kalimpong</option>
+                    <option>Kolkata</option>
+                    <option>Malda</option>
+                    <option>Murshidabad</option>
+                    <option>Nadia</option>
+                    <option>North 24 Parganas</option>
+                    <option>Paschim Bardhaman</option>
+                    <option>Paschim Medinipur</option>
+                    <option>Purba Bardhaman</option>
+                    <option>Purba Medinipur</option>
+                    <option>Purulia</option>
+                    <option>South 24 Parganas</option>
+                    <option>Uttar Dinajpur</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="out-sub-district"
+                    class="block text-sm font-medium text-gray-700"
+                    >Sub-District</label
+                  >
+                  <select
+                    id="out-sub-district"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select District First</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="out-pin-code"
+                    class="block text-sm font-medium text-gray-700"
+                    >Pin Code</label
+                  >
+                  <input
+                    type="text"
+                    id="out-pin-code"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div class="md:col-span-3">
+                  <label
+                    for="out-mobile-number"
+                    class="block text-sm font-medium text-gray-700"
+                    >Mobile Number</label
+                  >
+                  <input
+                    type="tel"
+                    id="out-mobile-number"
+                    maxlength="10"
+                    pattern="[0-9]{10}"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Particulars Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Particulars
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="out-admission-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Admission Date</label
+                  >
+                  <input
+                    type="date"
+                    id="out-admission-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                 <div>
+                  <label
+                    for="out-ll-app-no"
+                    class="block text-sm font-medium text-gray-700"
+                    >LL Application No.</label
+                  >
+                  <input
+                    type="text"
+                    id="out-ll-app-no"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                 <div>
+                  <label
+                    for="out-dl-app-no"
+                    class="block text-sm font-medium text-gray-700"
+                    >DL Application No.</label
+                  >
+                  <input
+                    type="text"
+                    id="out-dl-app-no"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-class-type"
+                    class="block text-sm font-medium text-gray-700"
+                    >License Category</label
+                  >
+                  <select
+                    id="out-class-type"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option>MCWOG (Motor Cycle Without Gear)</option>
+                    <option>MCWG (Motor Cycle With Gear)</option>
+                    <option>LMV (Light Motor Vehicle)</option>
+                    <option>LMV-NT (Light Motor Vehicle - Non Transport)</option>
+                    <option>LMV-TR (Light Motor Vehicle - Transport)</option>
+                    <option>LMV CAB</option>
+                    <option>MGV (Medium Goods Vehicle)</option>
+                    <option>HGV (Heavy Goods Vehicle)</option>
+                    <option>MPMV (Medium Passenger Motor Vehicle)</option>
+                    <option>HPMV (Heavy Passenger Motor Vehicle)</option>
+                    <option>HTV (Heavy Transport Vehicle)</option>
+                    <option>TRAILER (Trailer License)</option>
+                    <option>IDP (International Driving Permit)</option>
+                    <option>ADAPTED VEHICLE</option>
+                    <option>E-RICKSHAW / E-CART</option>
+                    <option>LMV Endorsement</option>
+                    <option>MCWG Endorsement</option>
+                    <option>MCWOG Endorsement</option>
+                    <option>E-rickshaw Endorsement</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    for="out-dob"
+                    class="block text-sm font-medium text-gray-700"
+                    >Date of Birth</label
+                  >
+                  <input
+                    type="date"
+                    id="out-dob"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-voter-id"
+                    class="block text-sm font-medium text-gray-700"
+                    >Voter ID Number</label
+                  >
+                  <input
+                    type="text"
+                    id="out-voter-id"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-aadhar-no"
+                    class="block text-sm font-medium text-gray-700"
+                    >Aadhar Number</label
+                  >
+                  <input
+                    type="text"
+                    id="out-aadhar-no"
+                    maxlength="14"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-blood-group"
+                    class="block text-sm font-medium text-gray-700"
+                    >Blood Group</label
+                  >
+                  <input
+                    type="text"
+                    id="out-blood-group"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div class="md:col-span-3">
+                  <label class="block text-sm font-medium text-gray-700"
+                    >Candidate Photo</label
+                  >
+                  <div class="mt-1 flex items-center space-x-6">
+                    <img
+                      id="out-photo-preview"
+                      src="https://placehold.co/100x100/e2e8f0/718096?text=Photo"
+                      alt="Candidate Photo"
+                      class="h-24 w-24 rounded-md object-cover"
+                    />
+                    <div class="flex-grow">
+                      <input
+                        type="file"
+                        id="out-photo-upload"
+                        accept="image/*"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100"
+                      />
+                      <p class="text-xs text-gray-500 mt-1">
+                        Upload a passport-size photo (JPG, PNG).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents Received Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Documents Received
+              </h3>
+              <div
+                id="out-documents-grid"
+                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              >
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-aadhar"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-aadhar"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Aadhar Card</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-voter"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-voter"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Voter ID Card</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-pan"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="out-doc-pan" class="ml-2 block text-sm text-gray-900"
+                    >PAN Card</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-birth-cert"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-birth-cert"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Birth Certificate</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-passport"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-passport"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Passport</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-address-proof"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-address-proof"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Address Proof</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-medical-cert"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-medical-cert"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Medical Certificate</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-photos"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label
+                    for="out-doc-photos"
+                    class="ml-2 block text-sm text-gray-900"
+                    >Photographs</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-sslc"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="out-doc-sslc" class="ml-2 block text-sm text-gray-900"
+                    >SSLC Certificate</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-dl"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="out-doc-dl" class="ml-2 block text-sm text-gray-900"
+                    >Driving License</label
+                  >
+                </div>
+                <div class="flex items-center">
+                  <input
+                    id="out-doc-ll"
+                    type="checkbox"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <label for="out-doc-ll" class="ml-2 block text-sm text-gray-900"
+                    >Learner License</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Contract Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Contract & Payment Ledger
+              </h3>
+              <!-- Main Contract Details -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label
+                    for="out-total-contract"
+                    class="block text-sm font-medium text-gray-700"
+                    >Total Contract Amount (INR)</label
+                  >
+                  <input
+                    type="number"
+                    id="out-total-contract"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                 <!-- Course Duration Removed -->
+                <div>
+                  <label
+                    for="out-checked-by"
+                    class="block text-sm font-medium text-gray-700"
+                    >Checked By</label
+                  >
+                  <input
+                    type="text"
+                    id="out-checked-by"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              <!-- Payment Summary -->
+              <div
+                class="bg-gray-50 p-4 rounded-lg border grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"
+              >
+                <div>
+                  <p class="text-sm font-medium text-gray-500">Total Paid</p>
+                  <p
+                    id="out-total-paid-display"
+                    class="text-2xl font-bold text-green-600"
+                  >
+                    ₹0
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-500">
+                    Remaining Balance
+                  </p>
+                  <p
+                    id="out-remaining-balance-display"
+                    class="text-2xl font-bold text-red-600"
+                  >
+                    ₹0
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-500">Status</p>
+                  <span
+                    id="out-payment-status-badge"
+                    class="px-3 py-1 text-sm font-semibold rounded-full"
+                  ></span>
+                </div>
+              </div>
+              <!-- Add New Payment -->
+              <div class="mt-6 border-t pt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">
+                  Add New Payment
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                  <div>
+                    <label
+                      for="out-new-payment-amount"
+                      class="block text-sm font-medium text-gray-700"
+                      >Amount (INR)</label
+                    >
+                    <input
+                      type="number"
+                      id="out-new-payment-amount"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-payment-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Payment Date</label
+                    >
+                    <input
+                      type="date"
+                      id="out-new-payment-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-payment-mode"
+                      class="block text-sm font-medium text-gray-700"
+                      >Payment Mode</label
+                    >
+                    <select
+                      id="out-payment-mode"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>By Cash</option>
+                      <option>Online Payment</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-payment-received-by"
+                      class="block text-sm font-medium text-gray-700"
+                      >Received By</label
+                    >
+                    <input
+                      type="text"
+                      id="out-new-payment-received-by"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div class="md:col-span-4 flex space-x-3">
+                    <button
+                      type="button"
+                      id="out-add-payment-btn"
+                      class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Add Payment
+                    </button>
+                    <button
+                      type="button"
+                      id="out-print-receipt-btn"
+                      class="w-full md:w-auto px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      Print Last Receipt
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Payment History -->
+              <div class="mt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">
+                  Payment History
+                </h4>
+                <div
+                  id="out-payment-history-log"
+                  class="space-y-2 max-h-40 overflow-y-auto bg-white border rounded-md p-3"
+                >
+                  <p class="text-gray-500 text-sm">No payments recorded yet.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Learner License Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Learner License History
+              </h3>
+              <!-- History Log -->
+              <div
+                id="out-ll-history-log"
+                class="space-y-3 mb-4 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-md border"
+              >
+                <p class="text-gray-500 text-sm">
+                  No learner license records yet.
+                </p>
+              </div>
+              <!-- Add New LL Record -->
+              <div class="mt-6 border-t pt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">
+                  Add New Learner License Record
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label
+                      for="out-new-ll-number"
+                      class="block text-sm font-medium text-gray-700"
+                      >Learner License No.</label
+                    >
+                    <input
+                      type="text"
+                      id="out-new-ll-number"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-ll-issue-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Issue Date</label
+                    >
+                    <input
+                      type="date"
+                      id="out-new-ll-issue-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-ll-valid-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Valid Upto</label
+                    >
+                    <input
+                      type="date"
+                      id="out-new-ll-valid-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-ll-test-result"
+                      class="block text-sm font-medium text-gray-700"
+                      >Test Result</label
+                    >
+                    <select
+                      id="out-new-ll-test-result"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>Not Applicable</option>
+                      <option>Pass</option>
+                      <option>Fail</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-ll-retest-date"
+                      class="block text-sm font-medium text-gray-700"
+                      >Retest Date</label
+                    >
+                    <input
+                      type="date"
+                      id="out-new-ll-retest-date"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-new-ll-retest-result"
+                      class="block text-sm font-medium text-gray-700"
+                      >Retest Result</label
+                    >
+                    <select
+                      id="out-new-ll-retest-result"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option>Not Applicable</option>
+                      <option>Pass</option>
+                      <option>Fail</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2">
+                    <label
+                      for="out-ll-renewal-fee"
+                      class="block text-sm font-medium text-gray-700"
+                      >Renewal Fee (INR, if applicable)</label
+                    >
+                    <input
+                      type="number"
+                      id="out-ll-renewal-fee"
+                      placeholder="e.g., 500"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="out-ll-renewal-received-by"
+                      class="block text-sm font-medium text-gray-700"
+                      >Received By</label
+                    >
+                    <input
+                      type="text"
+                      id="out-ll-renewal-received-by"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="out-add-ll-btn"
+                  class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add Record
+                </button>
+              </div>
+            </div>
+
+            <!-- New Driving License Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                New Driving License Details
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="out-new-dl-number"
+                    class="block text-sm font-medium text-gray-700"
+                    >DL Number</label
+                  >
+                  <input
+                    type="text"
+                    id="out-new-dl-number"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-new-dl-issue-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Issue Date</label
+                  >
+                  <input
+                    type="date"
+                    id="out-new-dl-issue-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-new-dl-valid-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Valid Upto</label
+                  >
+                  <input
+                    type="date"
+                    id="out-new-dl-valid-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Previous DL Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Previous Driving License (If any)
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label
+                    for="out-prev-dl-number"
+                    class="block text-sm font-medium text-gray-700"
+                    >DL Number</label
+                  >
+                  <input
+                    type="text"
+                    id="out-prev-dl-number"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-prev-dl-issue-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Issue Date</label
+                  >
+                  <input
+                    type="date"
+                    id="out-prev-dl-issue-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="out-prev-dl-valid-date"
+                    class="block text-sm font-medium text-gray-700"
+                    >Valid Upto</label
+                  >
+                  <input
+                    type="date"
+                    id="out-prev-dl-valid-date"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Remarks Section -->
+            <div class="border-t border-gray-200 pt-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                Remarks Log
+              </h3>
+              <div
+                id="out-remarks-history"
+                class="space-y-3 mb-4 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-md border"
+              >
+                <p class="text-gray-500 text-sm">No remarks yet.</p>
+              </div>
+              <div>
+                <label
+                  for="out-new-remark"
+                  class="block text-sm font-medium text-gray-700"
+                  >Add New Remark</label
+                >
+                <textarea
+                  id="out-new-remark"
+                  rows="3"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                ></textarea>
+                <button
+                  type="button"
+                  id="out-add-remark-btn"
+                  class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add Remark
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t mt-8 space-x-4">
+              <button
+                type="button"
+                id="out-print-pdf-btn"
+                class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Print Record (PDF)
+              </button>
+              <button
+                type="submit"
+                class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Save Candidate Data
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Form 5 Generation Form -->
+        <div id="form-misc" class="form-container hidden">
+          <form
+            id="form5-form"
+            class="bg-white p-8 rounded-lg shadow-md space-y-6"
+          >
+            <button
+              type="button"
+              class="back-btn mb-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to Dashboard
+            </button>
+            <h2 class="text-2xl font-semibold text-gray-800 border-b pb-4">
+              Form 5 Generation
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="form5-serial-no" class="block text-sm font-medium text-gray-700">Serial No. (Auto-Generated on Save)</label>
+                                <input type="text" id="form5-serial-no" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-200 cursor-not-allowed" readonly disabled />
+                            </div>
+                            <div>
+                                <label for="form5-name" class="block text-sm font-medium text-gray-700">Applicant Name (Sri/Smt/Kumari)</label
+                >
+                <input
+                  type="text"
+                  id="form5-name"
+                  required
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label
+                  for="form5-guardian"
+                  class="block text-sm font-medium text-gray-700"
+                  >Son/Wife/Daughter of</label
+                >
+                <input
+                  type="text"
+                  id="form5-guardian"
+                  required
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+               <div class="md:col-span-2">
+                <label
+                  for="form5-address"
+                  class="block text-sm font-medium text-gray-700"
+                  >Resident Of (Full Address)</label
+                >
+                <textarea
+                  id="form5-address"
+                  rows="3"
+                  required
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                ></textarea>
+              </div>
+              <div>
+                 <label for="form5-enroll-date" class="block text-sm font-medium text-gray-700">Enrolled On (Date)</label>
+                                <input type="date" id="form5-enroll-date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+                            <div>
+                                <label for="form5-vehicle-class" class="block text-sm font-medium text-gray-700">Vehicle Class (e.g., LMV GV)</label>
+                                <input type="text" id="form5-vehicle-class" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+                            <div>
+                                <label for="form5-training-from" class="block text-sm font-medium text-gray-700">Period of Training (From)</label
+                >
+                <input
+                  type="date"
+                  id="form5-training-from"
+                  required
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label
+                  for="form5-training-to"
+                  class="block text-sm font-medium text-gray-700"
+                  >Period of Training (To)</label
+                >
+                <input
+                  type="date"
+                  id="form5-training-to"
+                  required
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label for="form5-school-license" class="block text-sm font-medium text-gray-700">License No.</label>
+                                <!-- Changed Label -->
+                                <input type="text" id="form5-school-license" value="WB57 20230006054" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+                            <div>
+                                <label for="form5-valid-till" class="block text-sm font-medium text-gray-700">Valid Till (Date)</label>
+                                <input type="date" id="form5-valid-till" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                            </div>
+
+                        </div>
+                        <div class="flex justify-end pt-4 space-x-3">
+                            <button type="submit" id="save-form5-btn" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                Save Form 5 Record
+              </button>
+                            <button type="button" id="print-form5-btn" class="inline-flex justify-center py-2 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 opacity-50 cursor-not-allowed"
+                                disabled>
+                Print Form 5 (PDF)
+              </button>
+                        </div>
+                </form>
+                </div>
+
+
+            </div>
+            <!-- End Forms Wrapper -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-600">
+                &copy; 2025 Mondal Automobile Motor Training School. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-10 transition-all duration-300">
+        <!-- Message here -->
+    </div>
+
+    <!-- Search Results Modal -->
+    <div id="results-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden modal-overlay">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Multiple Records Found
+                </h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Please select the correct record from the list below.
+                    </p>
+                    <ul id="results-list" class="mt-4 space-y-2 text-left">
+                        <!-- Results will be injected here -->
+                    </ul>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md w-full hover:bg-gray-300">
+              Cancel
+            </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Script -->
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
